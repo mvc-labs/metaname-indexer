@@ -1,10 +1,8 @@
 
-import { mvc, buildContractClass, Bytes, ContractDescription } from 'mvc-scrypt';
+import { mvc, Bytes, ContractDescription } from 'mvc-scrypt';
 
 import { readFileSync, existsSync } from 'fs';
 import path = require('path');
-
-import { loadDesc, compileContract } from '../scrypt_helper';
 
 export const TX_VERSION = 10
 export const SIG_HASH_ALL = mvc.crypto.Signature.SIGHASH_ALL | mvc.crypto.Signature.SIGHASH_FORKID
@@ -35,23 +33,6 @@ export function loadReleaseDesc(fileName: string) {
         throw new Error(`Description file ${filePath} not exist!\nIf You already run 'npm run watch', maybe fix the compile error first!`)
     }
     return JSON.parse(readFileSync(filePath).toString());
-}
-
-export const genContract = function (name: string, use_desc = true, use_release = false) {
-    if (use_desc) {
-        const index = name.indexOf('/')
-        if (index > 0) {
-            name = name.substring(index, name.length)
-        }
-        if (use_release) {
-            return buildContractClass(loadReleaseDesc(name + '_release_desc.json'))
-        } else {
-            return buildContractClass(loadDesc(name + '_desc.json'))
-        }
-    }
-    else {
-        return buildContractClass(compileContract(name + '.scrypt'))
-    }
 }
 
 export const getUInt8Buf = function (amount: number) {

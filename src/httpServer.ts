@@ -2,11 +2,9 @@ import express = require('express')
 import compression = require('compression')
 import { initLogger, logger as log } from './logger'
 import { handleError, errorMsg } from './error'
-import { sleep } from './helper'
 import { DataService } from './dataService'
 import { MongoDb } from './db/mongodb'
 import { MnsIndexer } from './mnsIndex'
-import MnsProto = require('./lib/mnsProto')
 
 const app = express()
 
