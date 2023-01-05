@@ -1,0 +1,20 @@
+# Metaname Indexer
+
+This repo is used to sync metaname data from latest blockchain transactions.
+
+## How to install
+
+This indexer use mongodb as database. You should install [mongodb](https://hub.docker.com/_/mongo) first.
+
+Then use ```npm install```
+
+## How to start
+
+Copy config/config-template.ts into config/config.ts.
+
+replace the config items with your configuration.
+
+```
+tsc
+node ./compiled/src/httpMain.js config/config.js
+```
