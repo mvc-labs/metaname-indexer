@@ -1,0 +1,40 @@
+{
+  "name": "metaname-indexer",
+  "version": "0.1.0",
+  "description": "",
+  "main": "",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "scripts": {
+    "test": "mocha -r ts-node/register test/*.test.ts  --reporter spec --timeout 600000",
+    "single-test": "mocha -r ts-node/register --timeout 600000",
+    "single-one": "mocha -r ts-node/register --timeout 600000 -g",
+    "main": "tsc && node out/main.js"
+  },
+  "author": "ccoincash",
+  "license": "",
+  "dependencies": {
+    "compression": "^1.7.4",
+    "elliptic": ">=6.5.4",
+    "express": "^4.17.1",
+    "fs": "^0.0.1-security",
+    "idna-uts46-hx": "^4.1.2",
+    "mongodb": "^4.2.2",
+    "mvc-scrypt": "^0.1.0",
+    "superagent": "^6.1.0",
+    "ts-node": "^8.6.2",
+    "typescript": "^4.3.2",
+    "winston": "^3.3.3",
+    "winston-daily-rotate-file": "^4.5.2"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.2.8",
+    "@types/mocha": "^7.0.1",
+    "@types/node": "^13.7.6",
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "mocha": "^8.4.0",
+    "tsconfig-paths": "^3.9.0"
+  }
+}
