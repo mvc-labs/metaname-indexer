@@ -18,11 +18,10 @@ const config = {
         name: 'mvc-mns-testnet', // db name
         collection: 'name', // collection name
         uri: 'mongodb://user:password@ip:port', // db uri
-        max_concurrency: 30
     },
-    mnsCodeHash: '',
-    mnsId: '',
-    syncInterval: 10000, // ms
+    mnsCodeHash: '38b0a77b5c84bfaba8b8cc39f729175c67111672',
+    mnsId: '56df076185885be7c2ec1d586d80e1473b507dbe',
+    syncInterval: 30000, // ms
 };
 exports.config = config;
     

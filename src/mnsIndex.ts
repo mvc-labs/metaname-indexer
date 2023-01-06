@@ -40,6 +40,7 @@ export class MnsIndexer {
 
     async start() {
         await this.db.connect()
+        await this.syncFromTx(true)
         this.timer() 
     }
 
@@ -66,6 +67,8 @@ export class MnsIndexer {
                 leafArray.push(leafNode)
             }
             await this.db.readAllData(handleData)
+            this.mnsDataTree = new MnsDataTree(leafArray)
+            log.debug('MnsIndexer: after readAllData merkleRoot %s', this.mnsDataTree.merkleRoot.toString('hex'))
         }
 
         const mnsUtxos = await this.dataService.getUniqueUtxo(this.mnsCodeHash, this.mnsID)
@@ -124,7 +127,7 @@ export class MnsIndexer {
                 const genesisRaw = NftProto.getGenesisRaw(nftScriptBuf).toString('hex')
                 const tokenIndex = NftProto.getTokenIndex(nftScriptBuf)
                 const genesisID = NftProto.getGenesisID(nftScriptBuf).toString('hex')
-                const data = {
+                const data: any = {
                     name,
                     expiredBlockHeight,
                     nftCodeHash,
@@ -160,16 +163,18 @@ export class MnsIndexer {
                 const genesisRaw = NftProto.getGenesisRaw(nftScriptBuf).toString('hex')
                 const tokenIndex = NftProto.getTokenIndex(nftScriptBuf)
                 const genesisID = NftProto.getGenesisID(nftScriptBuf).toString('hex')
-                const data = {
+                const data: any = {
                     name,
                     expiredBlockHeight,
                     nftCodeHash,
                     genesisRaw,
                     tokenIndex,
-                    resolver,
                     genesisID,
                     txid,
                     op
+                }
+                if (resolver) {
+                    data.resolver = resolver
                 }
                 queue.push(data)
             }
@@ -219,6 +224,7 @@ export class MnsIndexer {
                 throw Error('merkle root not match')
             }
             this.currentTxId = latestTxid
+            log.info('update currentTxId: %s', this.currentTxId)
             // write to the file
             fs.writeFileSync(TXID_PATH, this.currentTxId)
         }
@@ -246,10 +252,9 @@ export class MnsIndexer {
 
     async timer() {
         log.info('MnsIndexer: timer start')
-        this.syncFromTx(true)
         while (true) {
             await sleep(this.syncInterval)
-            this.syncFromTx()
+            await this.syncFromTx()
         }
     }
 }
