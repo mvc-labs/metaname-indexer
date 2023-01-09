@@ -254,7 +254,11 @@ export class MnsIndexer {
         log.info('MnsIndexer: timer start')
         while (true) {
             await sleep(this.syncInterval)
-            await this.syncFromTx()
+            try {
+                await this.syncFromTx()
+            } catch(err: any) {
+                log.error('MnsIndexer: timer error: %s', err.message)
+            }
         }
     }
 }
