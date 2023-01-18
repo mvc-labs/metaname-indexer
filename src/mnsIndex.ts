@@ -10,6 +10,7 @@ import {logger as log} from './logger'
 import { getBlockTime, readScriptChunkUInt, decodeOutpoint, getOpreturndata, sleep } from "./helper"
 import MnsProto = require('./lib/mnsProto')
 import NftProto = require('./lib/nftProto')
+import { ErrorCode } from "./error";
 
 const TXID_PATH = './txid.txt'
 
@@ -113,7 +114,9 @@ export class MnsIndexer {
             // register
             if (tx.inputs.length === 4) {
                 let unlockScript = new mvc.Script(tx.inputs[0].script)
-                const name = unlockScript.chunks[2].buf.toString('hex')
+                const nameBuf = unlockScript.chunks[2].buf
+                const name = nameBuf.toString('hex')
+                const nameStr = nameBuf.toString()
                 const daysChunk = unlockScript.chunks[3]
                 const resolver = unlockScript.chunks[4].buf.toString('hex')
                 const days = readScriptChunkUInt(daysChunk)
@@ -129,6 +132,7 @@ export class MnsIndexer {
                 const genesisID = NftProto.getGenesisID(nftScriptBuf).toString('hex')
                 const data: any = {
                     name,
+                    nameStr,
                     expiredBlockTime,
                     nftCodeHash,
                     genesisRaw,
@@ -142,7 +146,9 @@ export class MnsIndexer {
             } else if (tx.inputs.length === 5) {
                 // renew or updateInfo
                 let unlockScript = new mvc.Script(tx.inputs[0].script)
-                const name = unlockScript.chunks[2].buf.toString('hex')
+                const nameBuf = unlockScript.chunks[2].buf
+                const name = nameBuf.toString('hex')
+                const nameStr = nameBuf.toString()
                 const daysChunk = unlockScript.chunks[3]
                 let resolver = unlockScript.chunks[4].buf.toString('hex')
                 const days = readScriptChunkUInt(daysChunk)
@@ -165,6 +171,7 @@ export class MnsIndexer {
                 const genesisID = NftProto.getGenesisID(nftScriptBuf).toString('hex')
                 const data: any = {
                     name,
+                    nameStr,
                     expiredBlockTime,
                     nftCodeHash,
                     genesisRaw,
@@ -245,7 +252,7 @@ export class MnsIndexer {
         const nameBuf = Buffer.from(nameUni)
         const node = this.getNode(nameBuf)
         if (!node) {
-            return [1, 'name not found']
+            return [ErrorCode.NameNotFound, '']
         }
         const res = await this.db.getNode(nameBuf) 
         return [0, res]

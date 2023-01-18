@@ -2,11 +2,15 @@ import {logger as log} from './logger'
 
 export enum ErrorCode {
     NoError = 0,
+
+    NameNotFound,
+
     UnknownError = 101,
 }
 
 export const ErrorMsg = {
     [ErrorCode.NoError]: 'no error',
+    [ErrorCode.NameNotFound]: 'name is not found',
     [ErrorCode.UnknownError]: 'unknown error',
 }
 

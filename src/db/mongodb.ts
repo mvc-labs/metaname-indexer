@@ -17,7 +17,7 @@ export class MongoDb implements DbInterface {
         await this.client.connect()
         await this.client.db(this.config.name).command({ ping: 1 });
         log.info("Connected successfully to server");
-        // TODO: check index before create
+        // check index before create
         await this.leafs.createIndex({'infos.mvc': 1})
         await this.leafs.createIndex({'txid': 1})
         await this.leafs.createIndex({'mnsIndex': 1})
