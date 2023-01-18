@@ -20,7 +20,7 @@ const config = {
         uri: 'mongodb://user:password@ip:port', // db uri
     },
     mnsCodeHash: '38b0a77b5c84bfaba8b8cc39f729175c67111672',
-    mnsId: '56df076185885be7c2ec1d586d80e1473b507dbe',
+    mnsId: '4b45149524803eafd4670ca79af72cabaf9bc5df',
     syncInterval: 30000, // ms
 };
 exports.config = config;

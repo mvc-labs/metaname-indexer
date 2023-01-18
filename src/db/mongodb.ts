@@ -73,7 +73,7 @@ export class MongoDb implements DbInterface {
             const doc = await this.leafs.findOne({'_id': name.toString('hex')})
             return {
                 name: Buffer.from(doc._id, 'hex').toString(),
-                expiredBlockHeight: doc.expiredBlockHeight,
+                expiredBlockTime: doc.expiredBlockTime,
                 nftCodeHash: doc.nftCodeHash,
                 genesisId: mvc.crypto.Hash.sha256ripemd160(Buffer.from(doc.genesisRaw, 'hex')).toString('hex'),
                 tokenIndex: BigInt(doc.tokenIndex).toString(),

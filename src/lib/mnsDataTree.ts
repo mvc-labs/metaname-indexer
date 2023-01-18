@@ -3,7 +3,7 @@ import { MerkleTreiLeaf, MerkleTreiTree } from "./merkleTreiTree"
 const Common = require('./common')
 
 export class MnsLeafNode implements MerkleTreiLeaf {
-    expiredBlockHeight: number
+    expiredBlockTime: number
     nftCodeHash: Buffer
     nftID: Buffer
     resolver: Buffer
@@ -15,9 +15,10 @@ export class MnsLeafNode implements MerkleTreiLeaf {
         return 100
     }
 
-    constructor(name: Buffer, expiredBlockHeight: number, nftCodeHash: Buffer, genesisRaw: Buffer, tokenIndex: bigint, resolver: Buffer) {
+    //TODO: name caps
+    constructor(name: Buffer, expiredBlockTime: number, nftCodeHash: Buffer, genesisRaw: Buffer, tokenIndex: bigint, resolver: Buffer) {
         this.name = name
-        this.expiredBlockHeight = expiredBlockHeight
+        this.expiredBlockTime = expiredBlockTime
         this.genesisRaw = genesisRaw
         this.nftCodeHash = nftCodeHash
         this.tokenIndex = tokenIndex
@@ -41,14 +42,14 @@ export class MnsLeafNode implements MerkleTreiLeaf {
     serialize() {
         return Buffer.concat([
             this.keyBuffer(), 
-            Common.getUInt32Buf(this.expiredBlockHeight),
+            Common.getUInt32Buf(this.expiredBlockTime),
             this.nftCodeHash,
             this.nftID,
             this.resolver
         ])
     }
     
-    static getExpiredBlockHeight(data: Buffer) {
+    static getExpiredBlockTime(data: Buffer) {
         return data.readUInt32LE(20)
     }
 
@@ -59,8 +60,7 @@ export class MnsLeafNode implements MerkleTreiLeaf {
     getDataToDb() {
         return { 
             name: this.name.toString('hex'),
-            nameStr: this.name.toString(),
-            expiredBlockHeight: this.expiredBlockHeight,
+            expiredBlockTime: this.expiredBlockTime,
             nftCodeHash: this.nftCodeHash.toString('hex'),
             genesisRaw: this.genesisRaw.toString('hex'),
             tokenIndex: this.tokenIndex,
@@ -70,7 +70,7 @@ export class MnsLeafNode implements MerkleTreiLeaf {
     }
 
     clone() {
-        const leaf = new MnsLeafNode(Buffer.from(this.name), this.expiredBlockHeight, Buffer.from(this.nftCodeHash), Buffer.from(this.genesisRaw), this.tokenIndex, Buffer.from(this.resolver))
+        const leaf = new MnsLeafNode(Buffer.from(this.name), this.expiredBlockTime, Buffer.from(this.nftCodeHash), Buffer.from(this.genesisRaw), this.tokenIndex, Buffer.from(this.resolver))
         return leaf
     }
 }
@@ -103,25 +103,26 @@ export class MnsDataTree {
         return this.dataTree.size
     }
 
-    register(name: Buffer, expiredBlockHeight: number, nftCodeHash: Buffer, genesisRaw: Buffer, tokenIndex: bigint, resolver: Buffer) {
+    // TODO: handle ust46
+    register(name: Buffer, expiredBlockTime: number, nftCodeHash: Buffer, genesisRaw: Buffer, tokenIndex: bigint, resolver: Buffer) {
         if (this.getNode(name)) {
             return false
         }
 
-        const leaf = new MnsLeafNode(name, expiredBlockHeight, nftCodeHash, genesisRaw, tokenIndex, resolver)
+        const leaf = new MnsLeafNode(name, expiredBlockTime, nftCodeHash, genesisRaw, tokenIndex, resolver)
 
         const res = this.dataTree.updateLeafNode(leaf)
         return res
     }
 
-    renew(name: Buffer, expiredBlockHeight: number) {
+    renew(name: Buffer, expiredBlockTime: number) {
         let node = this.getNode(name)
         if (!node) {
             return false
         }
 
         const newNode = (<MnsLeafNode>node).clone()
-        newNode.expiredBlockHeight = expiredBlockHeight
+        newNode.expiredBlockTime = expiredBlockTime
         return this.dataTree.updateLeafNode(newNode)
     }
 

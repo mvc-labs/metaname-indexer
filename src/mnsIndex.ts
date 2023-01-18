@@ -7,7 +7,7 @@ import { DbInterface } from './db/interface';
 import { MnsLeafNode, MnsDataTree } from './lib/mnsDataTree'
 import { DataService } from './dataService';
 import {logger as log} from './logger'
-import { getBlockHeight, readScriptChunkUInt, decodeOutpoint, getOpreturndata, sleep } from "./helper"
+import { getBlockTime, readScriptChunkUInt, decodeOutpoint, getOpreturndata, sleep } from "./helper"
 import MnsProto = require('./lib/mnsProto')
 import NftProto = require('./lib/nftProto')
 
@@ -58,7 +58,7 @@ export class MnsIndexer {
             function handleData(leafData) {
                 const leafNode = new MnsLeafNode(
                     Buffer.from(leafData.nameHex, 'hex'),
-                    leafData.expiredBlockHeight,
+                    leafData.expiredBlockTime,
                     Buffer.from(leafData.nftCodeHash, 'hex'),
                     Buffer.from(leafData.genesisRaw, 'hex'),
                     leafData.tokenIndex,
@@ -97,7 +97,7 @@ export class MnsIndexer {
 
             const tx = mvc.Transaction(rawTx)
             if (tx.inputs.length <= 2) {
-                log.debug('genesis tx: ', tx.id)
+                log.debug('genesis tx: %s', tx.id)
                 break
             }
 
@@ -114,12 +114,12 @@ export class MnsIndexer {
             if (tx.inputs.length === 4) {
                 let unlockScript = new mvc.Script(tx.inputs[0].script)
                 const name = unlockScript.chunks[2].buf.toString('hex')
-                const blockNumChunk = unlockScript.chunks[3]
+                const daysChunk = unlockScript.chunks[3]
                 const resolver = unlockScript.chunks[4].buf.toString('hex')
-                const blockNum = readScriptChunkUInt(blockNumChunk)
-                const blockHeightMsg = unlockScript.chunks[14].buf.toString('hex')
-                const curBlockHeight = getBlockHeight(blockHeightMsg)
-                const expiredBlockHeight = curBlockHeight + blockNum
+                const days = readScriptChunkUInt(daysChunk)
+                const blockTimeMsg = unlockScript.chunks[14].buf.toString('hex')
+                const curBlockTime = getBlockTime(blockTimeMsg)
+                const expiredBlockTime = curBlockTime + days * MnsProto.DAY_TIMESTAMP
 
                 // nft script
                 const nftScriptBuf = tx.outputs[1].script.toBuffer()
@@ -129,7 +129,7 @@ export class MnsIndexer {
                 const genesisID = NftProto.getGenesisID(nftScriptBuf).toString('hex')
                 const data: any = {
                     name,
-                    expiredBlockHeight,
+                    expiredBlockTime,
                     nftCodeHash,
                     genesisRaw,
                     tokenIndex,
@@ -143,17 +143,17 @@ export class MnsIndexer {
                 // renew or updateInfo
                 let unlockScript = new mvc.Script(tx.inputs[0].script)
                 const name = unlockScript.chunks[2].buf.toString('hex')
-                const blockNumChunk = unlockScript.chunks[3]
+                const daysChunk = unlockScript.chunks[3]
                 let resolver = unlockScript.chunks[4].buf.toString('hex')
-                const blockNum = readScriptChunkUInt(blockNumChunk)
+                const days = readScriptChunkUInt(daysChunk)
                 const opChunk = unlockScript.chunks[unlockScript.chunks.length - 1]
                 const op = readScriptChunkUInt(opChunk)
 
                 const oldLeafChunk = unlockScript.chunks[27]
-                let expiredBlockHeight = MnsLeafNode.getExpiredBlockHeight(oldLeafChunk.buf)
+                let expiredBlockTime = MnsLeafNode.getExpiredBlockTime(oldLeafChunk.buf)
 
                 if (op === MnsProto.UPDATE_DATA_RENEW) {
-                    expiredBlockHeight = expiredBlockHeight + blockNum
+                    expiredBlockTime = expiredBlockTime + days * MnsProto.DAY_TIMESTAMP
                     resolver = undefined
                 }
 
@@ -165,7 +165,7 @@ export class MnsIndexer {
                 const genesisID = NftProto.getGenesisID(nftScriptBuf).toString('hex')
                 const data: any = {
                     name,
-                    expiredBlockHeight,
+                    expiredBlockTime,
                     nftCodeHash,
                     genesisRaw,
                     tokenIndex,
@@ -204,12 +204,13 @@ export class MnsIndexer {
                 const infos = JSON.parse(getOpreturndata(scriptBuffer).toString())
                 data.infos = infos
             }
+            log.debug('update db data %s, info %s', data, data.infos)
             await this.db.saveNode(data)
 
             if (data.op == MnsProto.OP_REGISTER) {
-                this.mnsDataTree.register(Buffer.from(data.name, 'hex'), data.expiredBlockHeight, Buffer.from(data.nftCodeHash, 'hex'), Buffer.from(data.genesisRaw, 'hex'), data.tokenIndex, Buffer.from(data.resolver, 'hex'))
+                this.mnsDataTree.register(Buffer.from(data.name, 'hex'), data.expiredBlockTime, Buffer.from(data.nftCodeHash, 'hex'), Buffer.from(data.genesisRaw, 'hex'), data.tokenIndex, Buffer.from(data.resolver, 'hex'))
             } else if (data.op === MnsProto.UPDATE_DATA_RENEW) {
-                this.mnsDataTree.renew(Buffer.from(data.name, 'hex'), data.expiredBlockHeight)
+                this.mnsDataTree.renew(Buffer.from(data.name, 'hex'), data.expiredBlockTime)
             } else {
                 this.mnsDataTree.setResolver(Buffer.from(data.name, 'hex'), Buffer.from(data.resolver, 'hex'))
             }

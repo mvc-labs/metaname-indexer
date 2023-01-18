@@ -1,7 +1,7 @@
 import { mvc } from "mvc-scrypt"
 
-export function getBlockHeight(rabinMsg: string) {
-    return Buffer.from(rabinMsg, 'hex').readUInt32LE(0)
+export function getBlockTime(rabinMsg: string) {
+    return Buffer.from(rabinMsg, 'hex').readUInt32LE(4)
 }
 
 export function readScriptChunkUInt(chunk) {

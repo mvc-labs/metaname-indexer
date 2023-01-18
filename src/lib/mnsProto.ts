@@ -11,14 +11,15 @@ export const UPDATE_DATA_RENEW = 21
 export const UPDATE_DATA_SET_RESOLVER = 22
 export const UPDATE_DATA_RETURN_NFT = 23
 
-export const BLOCK_NUM_PER_YEAR = 144 * 365
+export const DAYS_PER_YEAR = 365
+export const DAY_TIMESTAMP = 86400
 
-// satochis per block num
-const NAME_1_FEE = 1903000;
-const NAME_2_FEE = 190300;
-const NAME_3_FEE = 38060;
-const NAME_4_FEE = 9515;
-const NAME_OTHER_FEE = 1903;
+// satochis per days
+const NAME_1_FEE = 1095892000;
+const NAME_2_FEE = 109589200;
+const NAME_3_FEE = 10958920;
+const NAME_4_FEE = 2739730;
+const NAME_OTHER_FEE = 273973;
 
 const NFT_GENESIS_HASH_LEN = 20
 const DATA_MERKLE_ROOT_LEN = 20
@@ -33,7 +34,7 @@ const NFT_GENESIS_HASH_OFFSET = CHARGE_ADDRESS_OFFSET + NFT_GENESIS_HASH_LEN;
 
 export const CUSTOM_DATA_LEN = NFT_GENESIS_HASH_OFFSET - UniqueProto.FIX_HEADER_LEN
 
-export const countNameFee = function(name: Buffer, blockNum: number) {
+export const countNameFee = function(name: Buffer, days: number) {
     const nameLen = name.length
     let fee = NAME_OTHER_FEE
     if (nameLen == 1) {
@@ -45,12 +46,12 @@ export const countNameFee = function(name: Buffer, blockNum: number) {
     } else if (nameLen == 4) {
         fee = NAME_4_FEE
     }
-    return fee * blockNum
+    return fee * days
 }
 
-export const countNameSatoshis = function(name: Buffer, blockNum: number) {
+export const countNameSatoshis = function(name: Buffer, days: number) {
 
-    const priceFee = countNameFee(name, blockNum)
+    const priceFee = countNameFee(name, days)
     let projFeeSatoshis = Math.floor(priceFee)
     return projFeeSatoshis
 }
