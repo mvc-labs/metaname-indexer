@@ -78,7 +78,8 @@ export class MongoDb implements DbInterface {
                 genesisId: mvc.crypto.Hash.sha256ripemd160(Buffer.from(doc.genesisRaw, 'hex')).toString('hex'),
                 tokenIndex: BigInt(doc.tokenIndex).toString(),
                 resolver: doc.resolver,
-                infos: doc.infos
+                infos: doc.infos,
+                txid: doc.txid
             }
         } catch (err) {
             log.error('db.getNode: error %s, name %s', err, name.toString('hex'))
