@@ -22,7 +22,6 @@ export class MnsIndexer {
     syncInterval: number
     currentTxId: string
     mnsIndex: number = 0
-    isSyncing: boolean = false
 
     dataService: DataService
     mnsDataTree: MnsDataTree
@@ -265,16 +264,8 @@ export class MnsIndexer {
         while (true) {
             await sleep(this.syncInterval)
             try {
-                // locking
-                if (this.isSyncing == true) {
-                    log.warn('MnsIndexer: syncFromTx isSyncing is true')
-                } else {
-                    this.isSyncing = true
-                    await this.syncFromTx()
-                    this.isSyncing = false
-                }
+                await this.syncFromTx()
             } catch(err: any) {
-                this.isSyncing = false
                 log.error('MnsIndexer: timer error: %s', err.message)
             }
         }
