@@ -2,7 +2,7 @@
 
 This repo is used to sync metaname data from the latest blockchain transactions.
 
-This indexer use mongodb as a database. You should install [mongodb](https://www.mongodb.com/) first.
+This indexer uses MongoDB as a database. You should install [MongoDB](https://www.mongodb.com/) first.
 
 ## Install Dependencies
 
@@ -25,7 +25,7 @@ Removing `txid.txt`, then restart indexer.
 
 ## Double-spending
 
-If there is a double-spending happening in metaname transactions. The indexer may need to re-sync all data from the beginning. 
+If there is a double-spending happening in Metaname transactions. The indexer may need to re-sync all data from the beginning. 
 
 So It's better to make a snapshot weekly of the database to save sync time. 
 
