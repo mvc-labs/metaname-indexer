@@ -97,10 +97,6 @@ export class MnsIndexer {
             const rawTx = await this.dataService.getRawTx(txid)
 
             const tx = mvc.Transaction(rawTx)
-            if (tx.inputs.length <= 2) {
-                log.debug('genesis tx: %s', tx.id)
-                break
-            }
 
             const root = MnsProto.getDataMerkleRoot(tx.outputs[0].script.toBuffer())
 
@@ -110,6 +106,11 @@ export class MnsIndexer {
             }
 
             log.debug('parse txid %s, merkleRoot: %s', txid, root.toString('hex'))
+
+            if (tx.inputs.length <= 2) {
+                log.debug('genesis tx: %s', tx.id)
+                break
+            }
 
             // register
             if (tx.inputs.length === 4) {

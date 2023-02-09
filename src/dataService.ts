@@ -46,8 +46,9 @@ export class DataService {
     }
 
     async getUniqueUtxo(codeHash: string, uniqueID: string) {
+        const url = `${this.tokenUrl}/contract/unique/genesis/${codeHash}/${uniqueID}/utxo`
         const res = await request.get(
-            `${this.tokenUrl}/contract/unique/genesis/${codeHash}/${uniqueID}/utxo`
+            url 
         ).http2(this.http2).timeout(TIMEOUT)
         if (res.status !== 200) {
             log.error("getUniqueUtxo failed: res %s", res)
