@@ -46,6 +46,7 @@ server.start = function () {
             let name = req.query.name
             if (!name || typeof name !== 'string') {
                 res.json({code: 1, msg: 'invalid name args'})
+                return
             }
             let [code, infos] = await mnsIndexer.getInfo(name)
             if (code != 0) {
@@ -57,6 +58,26 @@ server.start = function () {
             handleError(err)
             res.json({code: 1, msg: err.message})
         }
+    })
+
+    app.get('/getinfosbymvc',async function(req, res) {
+        try {
+            let mvc = req.query.mvc
+            if (!mvc || typeof mvc !== 'string') {
+                res.json({code: 1, msg: 'invalid mvc args'})
+                return
+            }
+            let [code, infos] = await mnsIndexer.getInfosByMvc(mvc)
+            if (code != 0) {
+                res.json({code: code, msg: errorMsg(code)})
+            } else {
+                res.json({code: 0, data: infos})
+            }
+        } catch (err: any) {
+            handleError(err)
+            res.json({code: 1, msg: err.message})
+        }
+        
     })
 
     httpserver = app.listen(server.config.port, server.config.ip, async function () {

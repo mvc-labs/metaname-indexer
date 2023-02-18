@@ -68,24 +68,46 @@ export class MongoDb implements DbInterface {
         }
     }
 
+    wrapDoc(doc) {
+        if (!doc) {
+            return false
+        }
+        return {
+            name: Buffer.from(doc._id, 'hex').toString(),
+            nameHex: doc._id,
+            expiredBlockTime: doc.expiredBlockTime,
+            nftCodeHash: doc.nftCodeHash,
+            genesisId: mvc.crypto.Hash.sha256ripemd160(Buffer.from(doc.genesisRaw, 'hex')).toString('hex'),
+            tokenIndex: BigInt(doc.tokenIndex).toString(),
+            resolver: doc.resolver,
+            infos: doc.infos,
+            txid: doc.txid
+        }
+    }
+
     async getNode(name: Buffer) {
         try {
             const doc = await this.leafs.findOne({'_id': name.toString('hex')})
-            return {
-                name: Buffer.from(doc._id, 'hex').toString(),
-                expiredBlockTime: doc.expiredBlockTime,
-                nftCodeHash: doc.nftCodeHash,
-                genesisId: mvc.crypto.Hash.sha256ripemd160(Buffer.from(doc.genesisRaw, 'hex')).toString('hex'),
-                tokenIndex: BigInt(doc.tokenIndex).toString(),
-                resolver: doc.resolver,
-                infos: doc.infos,
-                txid: doc.txid
-            }
+            return this.wrapDoc(doc)
         } catch (err) {
             log.error('db.getNode: error %s, name %s', err, name.toString('hex'))
             return false
         }
 
+    }
+
+    async getNodesByMvc(mvcAddress: string) {
+        try {
+            const cursor = this.leafs.find({'infos.mvc': mvcAddress})
+            const nodes: any = []
+            await cursor.forEach((doc) => {
+                nodes.push(this.wrapDoc(doc))
+            })
+            return nodes
+        } catch (err) {
+            log.error('db.getNodeByMvc: error %s, mvc %s', err, mvcAddress)
+            return false
+        }
     }
 
     async close() {

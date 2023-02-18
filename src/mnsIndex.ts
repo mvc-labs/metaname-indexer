@@ -259,6 +259,15 @@ export class MnsIndexer {
         return [0, res]
     }
 
+    async getInfosByMvc(mvcAddress: string) {
+
+        const nodes = await this.db.getNodesByMvc(mvcAddress)
+        if (!nodes) {
+            return [ErrorCode.MvcAddressNotFound, '']
+        }
+        return [0, nodes]
+    }
+
     async timer() {
         log.info('MnsIndexer: timer start')
         while (true) {

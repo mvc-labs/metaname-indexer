@@ -4,6 +4,7 @@ export enum ErrorCode {
     NoError = 0,
 
     NameNotFound,
+    MvcAddressNotFound,
 
     UnknownError = 101,
 }
@@ -11,6 +12,7 @@ export enum ErrorCode {
 export const ErrorMsg = {
     [ErrorCode.NoError]: 'no error',
     [ErrorCode.NameNotFound]: 'name is not found',
+    [ErrorCode.MvcAddressNotFound]: 'mvc address is not found',
     [ErrorCode.UnknownError]: 'unknown error',
 }
 
