@@ -31,13 +31,13 @@ So It's better to make a snapshot weekly of the database to save sync time.
 
 ## Http interface
 
-### Get name info
-### Request
+### 1 Get name info
+#### Request
 - Methos: **GET**
 - URL: ```/getinfo?name=hello```
 > * name: the metaname you want to search
 
-### Response
+#### Response
 
 ```
 {
@@ -68,3 +68,49 @@ data format:
 > * tokenIndex: the token index of the metaname index.
 > * resolver: the resolver outpoint used to store metaname infos on chain.
 > * infos: the infos of the metaname.
+
+### 2 Get infos by MVC address
+#### Request
+- Methos: **GET**
+- URL: ```/getinfosbymvc?mvc=16U2MZ22T5kuuRCHNJUhuomn7FZcV9pDyS```
+> * mvc: the mvc address you want to search
+
+#### Response
+
+```
+{
+    "code": 0,
+    "data": [
+        {
+            "name": "test1",
+            "nameHex": "6369766572",
+            "expiredBlockTime": 1707984896,
+            "nftCodeHash": "e205939ad9956673ce7da9fbd40514b30f66dc35",
+            "genesisId": "a5cf55db26bd15c24b62684edb6154ccc06d79b5",
+            "tokenIndex": "0",
+            "resolver": "6a17c89fd3c422506d3343b76a8ba038bd7e3d84498f2eefe0b0116f32ab766c01000000",
+            "infos": {
+                "metaid": "",
+                "mvc": "16U2MZ22T5kuuRCHNJUhuomn7FZcV9pDyS"
+            },
+            "txid": "3e98eb9663f16533efe1d27f1086983e0d6f3d05a18a40417e446ea6859c55b3"
+        },
+        {
+            "name": "test2",
+            "nameHex": "6368656e6734",
+            "expiredBlockTime": 1708225838,
+            "nftCodeHash": "e205939ad9956673ce7da9fbd40514b30f66dc35",
+            "genesisId": "a5cf55db26bd15c24b62684edb6154ccc06d79b5",
+            "tokenIndex": "28",
+            "resolver": "1ac6f7fe3197f9ab05ead3ab14e328654625ad9bcd2ec206a2d1effa7760662600000000",
+            "infos": {
+                "metaid": "",
+                "mvc": "16U2MZ22T5kuuRCHNJUhuomn7FZcV9pDyS"
+            },
+            "txid": "36e0e4348ce8a7b455c994e27a2ade7950c4b4365d6ec394386a812650cb2553"
+        }
+    ]
+}
+```
+
+When code is 0, it means success. Otherwise it means failed and there will be a msg which describes the specific information.
