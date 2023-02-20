@@ -244,7 +244,12 @@ export class MnsIndexer {
     }
 
     getNode(name: Buffer) {
-        return this.mnsDataTree.getNode(name)
+        const node = <MnsLeafNode>this.mnsDataTree.getNode(name)
+        const now = Math.floor(Date.now() / 1000)
+        if (!node || node.expiredBlockTime < now) {
+            return null
+        }
+        return node
     }
 
     async getInfo(name: string) {
@@ -265,7 +270,14 @@ export class MnsIndexer {
         if (!nodes) {
             return [ErrorCode.MvcAddressNotFound, '']
         }
-        return [0, nodes]
+        const infos: any = []
+        const now = Math.floor(Date.now() / 1000)
+        for (const node of nodes) {
+            if (node.expiredBlockTime > now) {
+                infos.push(node)
+            }
+        }
+        return [0, infos]
     }
 
     async timer() {
