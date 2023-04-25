@@ -1,8 +1,8 @@
 "use strict";
 const config = {
     dataService: {
-        tokenUrl: 'https://api-mvc.metasv.com', // mainnet
-        //tokenUrl: 'https://api-mvc-testnet.metasv.com', // testnet
+        tokenUrl: 'https://mainnet.mvcapi.com', // mainnet
+        //tokenUrl: 'https://testnet.mvcapi.com', // testnet
     },
     log: {
         path: './logs/',
