@@ -243,20 +243,20 @@ export class MnsIndexer {
         await this.db.close()
     }
 
-    getNode(name: Buffer) {
+    getNode(name: Buffer, expired: boolean = false) {
         const node = <MnsLeafNode>this.mnsDataTree.getNode(name)
         const now = Math.floor(Date.now() / 1000)
-        if (!node || node.expiredBlockTime < now) {
+        if (!node || (expired == false && node.expiredBlockTime < now)) {
             return null
         }
         return node
     }
 
-    async getInfo(name: string) {
+    async getInfo(name: string, expired: boolean = false) {
 
         const nameUni = uts46.toUnicode(name)
         const nameBuf = Buffer.from(nameUni)
-        const node = this.getNode(nameBuf)
+        const node = this.getNode(nameBuf, expired)
         if (!node) {
             return [ErrorCode.NameNotFound, '']
         }

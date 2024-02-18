@@ -48,7 +48,8 @@ server.start = function () {
                 res.json({code: 1, msg: 'invalid name args'})
                 return
             }
-            let [code, infos] = await mnsIndexer.getInfo(name)
+            let expired = req.query.expired || false
+            let [code, infos] = await mnsIndexer.getInfo(name, expired)
             if (code != 0) {
                 res.json({code: code, msg: errorMsg(code)})
             } else {
