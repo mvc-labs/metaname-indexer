@@ -105,9 +105,9 @@ export class MnsDataTree {
 
     // TODO: handle ust46
     register(name: Buffer, expiredBlockTime: number, nftCodeHash: Buffer, genesisRaw: Buffer, tokenIndex: bigint, resolver: Buffer) {
-        if (this.getNode(name)) {
-            return false
-        }
+        //if (this.getNode(name)) {
+        //    return false
+        //}
 
         const leaf = new MnsLeafNode(name, expiredBlockTime, nftCodeHash, genesisRaw, tokenIndex, resolver)
 
